@@ -32,6 +32,9 @@ while True:
             fake_name = fake.name()
             vk.method("messages.send", {"user_id": user_id, "message": fake_name,
                                         "random_id": random.randint(1, 1000)})
+        elif text.lower() == "вика":
+            vk.method("messages.send", {"user_id": user_id, "message": "Затролил🗿. Ты хорни?",
+                                        "random_id": random.randint(1, 1000)})
         elif text.lower() == "помощь":
             fake_name = fake.name()
             vk.method("messages.send", {"user_id": user_id, "message": "Команды в боте: \n"
@@ -39,8 +42,16 @@ while True:
                                                                        "2) рандом фио---> фейковое имя, "
                                                                        "фамилия, отчество\n"
                                                                        "3) хочу поболтать(ответь) ---> "
-                                                                       "Диалог с разработчиком",
+                                                                       "Диалог с разработчиком\n"
+                                                                       "4)фото ---> Фотография",
                                         "random_id": random.randint(1, 1000)})
+        elif text.lower() == "фото":
+            uploader = vk_api.upload.VkUpload(vk)
+            img = uploader.photo_messages("clickbeat.jpg")
+            media_id = str(img[0]["id"])
+            owner_id = str(img[0]["owner_id"])
+            vk.method("messages.send", {"user_id":user_id, "attachment":"photo" + owner_id + "_" + media_id,
+                                    "random_id":random.randint(1, 1000)})
         else:
             vk.method("messages.send", {"user_id":user_id, "message":"Капец я Арсений, я хз что вы мне пишете."
                                                                      " Но я все равно это прочитал))"
