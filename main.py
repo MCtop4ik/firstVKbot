@@ -8,6 +8,7 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 token = "cca857c898cddf36df64b23b6cb96ee9cfd86b19aaa976c065a3bd969db24738f4b6ecae6dc9802d120eb"
 
 fake = Faker("ru_RU")
+keyboard = VkKeyboard(one_time=False)
 vk = vk_api.VkApi(token=token)
 vk._auth_token()
 
@@ -22,7 +23,6 @@ arrayOfPhotos = ["2V3bS4ANsX30c9F2XXJV2a-46nArfOHcx_Bm7MM2hgCPkJzHGkHgvW1hnP7zGB
                  "Pv-yKS_l68k7OJxez2Jv5BO9H40RsfDt5CjIzInU1-pj5WjHPdrS8sAZm1QAz-fvx696jAEBNy6fD3FXHxHCW77K.jpg",
                  "rEMZyyMWBolJLO31zwK5z5IA_Tig_m8c6O1zhrRtJ1-CPUA7TtmQuP6jmojKY5WTVW-k-dTBhz-JSLaDfCHw1pFv.jpg",
                  "Uv1Y6TPdGg2ZuEECNdNdc3lzS8fc4y_yPcTwnR8LAM43SPmesuDtGF4dFSZRNAubkDixistGZsuvaPmwhdaSbI4y.jpg"]
-
 
 def send_message(message, user_id, keyboard=None):
     post = {"user_id": user_id, "message": message,
@@ -42,7 +42,8 @@ while True:
         print(text)
         if text.lower() == "привет":
             send_message("Хай!", user_id)
-        elif text.lower() == "хочу поболтать" or text.lower() == "ответь":
+        elif text.lower() == "хочу поболтать" or text.lower() == "ответь" \
+                or text.lower() == "написать авторам":
             answerFromMe = input()
             send_message(answerFromMe, user_id)
         elif text.lower() == "рандом":
@@ -56,14 +57,6 @@ while True:
             send_message("Затролил🗿. Ты хорни?", user_id)
         elif text.lower() == "помощь":
             fake_name = fake.name()
-            vk.method("messages.send", {"user_id": user_id, "message": "Команды в боте: \n"
-                                                                       "1) рандом ---> генерация рандомного числа\n"
-                                                                       "2) рандом фио---> фейковое имя, "
-                                                                       "фамилия, отчество\n"
-                                                                       "3) хочу поболтать(ответь) ---> "
-                                                                       "Диалог с разработчиком\n"
-                                                                       "4)фото ---> Фотография",
-                                        "random_id": random.randint(1, 1000)})
             send_message("Команды в боте: \n"
                                                                        "1) рандом ---> генерация рандомного числа\n"
                                                                        "2) рандом фио---> фейковое имя, "
@@ -73,22 +66,34 @@ while True:
                                                                        "4)фото ---> Фотография", user_id)
 
         elif text.lower() == "фото":
-            time.sleep(1)
             uploader = vk_api.upload.VkUpload(vk)
             img = uploader.photo_messages(arrayOfPhotos[random.randint(0, 10)])
             media_id = str(img[0]["id"])
             owner_id = str(img[0]["owner_id"])
             vk.method("messages.send", {"user_id":user_id, "attachment":"photo" + owner_id + "_" + media_id,
                                     "random_id":random.randint(1, 1000)})
-        elif text.lower() == "start":
-            keyboard = VkKeyboard(one_time=True)
-            iButton = "button"
-            keyboard.add_button(label=iButton, color=VkKeyboardColor.PRIMARY)
-            send_message("Первая кнопка", user_id)
-
+        elif text.lower() == "start" or text.lower() == "назад":
+            keyboard = VkKeyboard(one_time=False)
+            keyboard.add_button('Рандом фио', color=VkKeyboardColor.SECONDARY)
+            keyboard.add_button('Фото', color=VkKeyboardColor.POSITIVE)
+            keyboard.add_button('Рандом', color=VkKeyboardColor.PRIMARY)
+            keyboard.add_line()
+            keyboard.add_button("Помощь", color=VkKeyboardColor.SECONDARY)
+            keyboard.add_button("О нас", color=VkKeyboardColor.POSITIVE)
+            send_message("Active", user_id, keyboard)
+        elif text.lower() == "о нас":
+            keyboard = VkKeyboard(one_time=False)
+            keyboard.add_button("Написать авторам", color=VkKeyboardColor.PRIMARY)
+            keyboard.add_button("Назад", color=VkKeyboardColor.PRIMARY)
+            send_message("Хз, что еще можно написать. Обычный вк бот", user_id, keyboard)
         else:
-            time.sleep(5)
+            time.sleep(3)
             send_message("Капец я Арсений, я хз что вы мне пишете."
                             " Но я все равно это прочитал))"
                             " 'Помощь' ---> выводит список команд", user_id)
 
+
+#https://www.youtube.com/watch?v=ihOxsYme6pk
+#https://www.youtube.com/watch?v=Zj88LoDlSxQ
+#https://www.youtube.com/watch?v=A3Pa4LnCW20
+#https://www.youtube.com/watch?v=Et0f6jDINCg
